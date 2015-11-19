@@ -18,8 +18,8 @@ RUN dpkg-reconfigure --frontend noninteractive locales
 RUN apt-get -yqq install language-pack-en
 
 # Set timezone
-ENV TZ "US/Eastern"
-RUN echo "US/Eastern" | sudo tee /etc/timezone
+ENV TZ "GB/London"
+RUN echo "GB/London" | sudo tee /etc/timezone
 RUN dpkg-reconfigure --frontend noninteractive tzdata
 
 # Install utilities
@@ -42,10 +42,19 @@ RUN mkdir -p /var/log/supervisor
 # Install Java
 RUN apt-get -yqq install openjdk-7-jre-headless
 
-# Install Selenium
-RUN mkdir -p /opt/selenium
-RUN wget --no-verbose -O /opt/selenium/selenium-server-standalone-2.43.1.jar http://selenium-release.storage.googleapis.com/2.43/selenium-server-standalone-2.43.1.jar
-RUN ln -fs /opt/selenium/selenium-server-standalone-2.43.1.jar /opt/selenium/selenium-server-standalone.jar
+# Install Python
+RUN apt-get install python3.4
+
+# Check out Adfuser Automation
+RUN mkdir ~/work
+RUN cd ~/work
+RUN git clone https://2b5f850d9d5ec9d9eaa2e6c7273f38c11ad36ea3:x-oauth-basic@github.com/artsalliancemedia/adfuser-automation.git
+
+# Install virtual-env
+RUN virtualenv -p /usr/bin/python3 venv
+RUN source ./venv/bin/activate
+RUN ./venv/bin/pip3 install -r requirements.txt
+RUN ./venv/bin/pip3 install pyvirtualdisplay
 
 # Install Chrome WebDriver
 RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip http://chromedriver.storage.googleapis.com/2.10/chromedriver_linux64.zip
